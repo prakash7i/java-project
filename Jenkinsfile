@@ -24,6 +24,15 @@ pipeline {
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/"
       }
     }
+    stage('Running on CentOS') {
+      agent {
+        label 'CentOS'
+      }
+      steps {
+        sh 'wget http://sansika773.mylabserver.com/rectangles/all/rectangles/rectangle_${env.BUILD_NUMBER}.jar'
+        sh 'java -jar rectangle_${env.BUILD_NUMBER}.jar 4 5'
+      }
+    }
   }
 
   post {
