@@ -38,9 +38,10 @@ pipeline {
       steps {
         echo "Stashing any local changes"
         sh 'git stash'
-        echo "Checing out development branch"
+        echo "Checking out development branch"
         sh 'git checkout development'
         echo "Checking out master branch"
+        sh 'git pull'
         sh 'git checkout master'
         echo "Mergiing development branch changes with master branch"
         sh 'git merge development'
@@ -53,8 +54,8 @@ pipeline {
         label 'apache'
       }
       steps {
-        sh 'mkdir -p /var/www/html/rectangles/all/{env.BRANCH_NAME}'
-        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/{env.BRANCH_NAME}/"
+        sh "if [[ ! -e /var/www/html/rectangles/all/${env.BRANCH_NAME} ]]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME} fi"
+        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
       }
     }
     stage('Running on CentOS') {
@@ -62,8 +63,8 @@ pipeline {
         label 'CentOS'
       }
       steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 4 5"
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 7 8"
       }
     }
     stage('Running on Debian') {
@@ -71,7 +72,7 @@ pipeline {
         docker 'openjdk:8u151-jre'
       }
       steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 6 7"
       }
     }
@@ -83,7 +84,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        sh "cp /var/www/html/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
+        sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
 
