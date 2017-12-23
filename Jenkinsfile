@@ -32,6 +32,30 @@ pipeline {
         }
       }
 	  }
+    stage('Promote from development branch to master') {
+      agent {
+        label 'apache'
+      }
+      when {
+        branch 'development'
+      }
+      steps {
+        echo "Stashing any local changes"
+        sh 'git stash'
+        echo "Checking out development branch"
+        sh 'git checkout development'
+        echo "Checking out master branch"
+        sh 'git pull origin'
+        sh 'git checkout master'
+        echo "Merging development branch changes with master branch"
+        sh 'git merge development'
+        echo "Pushing origin to master"
+        sh 'git push origin master'
+        echo "Tagging the release"
+        sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
+        sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
+      }
+    }
     stage('deploy') {
       agent {
         label 'apache'
@@ -67,30 +91,6 @@ pipeline {
       }
       steps {
         sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
-      }
-    }
-    stage('Promote from development branch to master') {
-      agent {
-        label 'apache'
-      }
-      when {
-        branch 'development'
-      }
-      steps {
-        echo "Stashing any local changes"
-        sh 'git stash'
-        echo "Checking out development branch"
-        sh 'git checkout development'
-        echo "Checking out master branch"
-        sh 'git pull origin'
-        sh 'git checkout master'
-        echo "Merging development branch changes with master branch"
-        sh 'git merge development'
-        echo "Pushing origin to master"
-        sh 'git push origin master'
-        echo "Tagging the release"
-        sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
-        sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
       }
     }
   }
