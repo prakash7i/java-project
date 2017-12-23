@@ -54,7 +54,7 @@ pipeline {
       }
       steps {
         sh 'mkdir -p /var/www/html/rectangles/all/{env.BRANCH_NAME}'
-        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/{env.BRANCH_NAME}/"
+        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
       }
     }
     stage('Running on CentOS') {
@@ -62,7 +62,7 @@ pipeline {
         label 'CentOS'
       }
       steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 4 5"
       }
     }
@@ -71,7 +71,7 @@ pipeline {
         docker 'openjdk:8u151-jre'
       }
       steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 6 7"
       }
     }
@@ -83,7 +83,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        sh "cp /var/www/html/rectangles/all/{env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
+        sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
 
