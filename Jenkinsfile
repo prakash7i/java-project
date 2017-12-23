@@ -38,7 +38,7 @@ pipeline {
       steps {
         echo "Stashing any local changes"
         sh 'git stash'
-        echo "Checing out development branch"
+        echo "Checking out development branch"
         sh 'git checkout development'
         echo "Checking out master branch"
         sh 'git checkout master'
@@ -53,7 +53,7 @@ pipeline {
         label 'apache'
       }
       steps {
-        sh 'mkdir -p /var/www/html/rectangles/all/${env.BRANCH_NAME}'
+        sh 'if [[ ! -e /var/www/html/rectangles/all/${env.BRANCH_NAME} ]]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME} fi'
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
       }
     }
