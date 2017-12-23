@@ -43,7 +43,7 @@ pipeline {
         echo "Checking out master branch"
         sh 'git pull'
         sh 'git checkout master'
-        echo "Mergiing development branch changes with master branch"
+        echo "Merging development branch changes with master branch"
         sh 'git merge development'
         echo "Pushing origin to master"
         sh 'git push origin master'
@@ -54,7 +54,7 @@ pipeline {
         label 'apache'
       }
       steps {
-        sh "if ![ -d /var/www/html/rectangles/all/${env.BRANCH_NAME} ]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME} fi"
+        sh "if ![ -d /var/www/html/rectangles/all/${env.BRANCH_NAME} ]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME}; fi"
         sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
       }
     }
@@ -87,6 +87,5 @@ pipeline {
         sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
-
   }
 }
