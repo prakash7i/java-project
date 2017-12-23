@@ -32,6 +32,43 @@ pipeline {
         }
       }
 	  }
+    stage('deploy') {
+      agent {
+        label 'apache'
+      }
+      steps {
+        sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
+      }
+    }
+    stage('Running on CentOS') {
+      agent {
+        label 'CentOS'
+      }
+      steps {
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 8 8"
+      }
+    }
+    stage('Running on Debian') {
+      agent {
+        docker 'openjdk:8u151-jre'
+      }
+      steps {
+        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
+        sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 10 9"
+      }
+    }
+    stage('Promote to green') {
+      agent {
+        label 'apache'
+      }
+      when {
+        branch 'master'
+      }
+      steps {
+        sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
+      }
+    }
     stage('Promote from development branch to master') {
       agent {
         label 'apache'
@@ -54,43 +91,6 @@ pipeline {
         echo "Tagging the release"
         sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
         sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
-      }
-    }
-    stage('deploy') {
-      agent {
-        label 'apache'
-      }
-      steps {
-        sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
-      }
-    }
-    stage('Running on CentOS') {
-      agent {
-        label 'CentOS'
-      }
-      steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 7 8"
-      }
-    }
-    stage('Running on Debian') {
-      agent {
-        docker 'openjdk:8u151-jre'
-      }
-      steps {
-        sh "wget http://sansika773.mylabserver.com/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar 6 7"
-      }
-    }
-    stage('Promote to green') {
-      agent {
-        label 'apache'
-      }
-      when {
-        branch 'master'
-      }
-      steps {
-        sh "cp /var/www/html/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
   }
