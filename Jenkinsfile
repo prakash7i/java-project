@@ -13,7 +13,7 @@ pipeline {
     stage ('Hello') {
       agent any
       steps {
-        sayHello ''
+        sayHello 'Awesome Student!!!'
       }
     }
     stage('Unit Tests') {
